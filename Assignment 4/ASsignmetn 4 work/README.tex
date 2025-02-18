@@ -1,0 +1,297 @@
+\documentclass[12pt]{article}
+\usepackage{ragged2e}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{fadings}
+\usepackage{filecontents}
+\usepackage{multirow}
+\usepackage{amsmath}
+\pgfplotsset{width=10cm,compat=1.17}
+\setlength{\parskip}{0.75em}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage[margin=2cm]{geometry}
+\setlength{\parindent}{0pt}
+\usetikzlibrary{arrows.meta}
+\usepackage{mdframed}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\definecolor{myorange}{RGB}{255,65,0}
+\definecolor{cherry}{RGB}{148,0,25}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{\textcolor{orange!80!black}{\itshape\leftmark}}
+\fancyhead[L]{\textcolor{black}{\thepage}}
+\fancyfoot{}
+\fancyfoot[C]{\footnotesize \textbf{Yousha Munowar}, McMaster University, MECHTRON 2MP3.}
+\renewcommand{\headrule}{\color{orange!80!black}\hrule width\headwidth height\headrulewidth \vskip-\headrulewidth}
+\renewcommand{\footrule}{\color{black}\hrule width\headwidth height\headrulewidth \vskip-\headrulewidth}
+
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{orange!80!black}}{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\large\bfseries\color{orange!80!black}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+{\normalfont\normalsize\bfseries\color{orange!80!black}}{\thesubsubsection}{1em}{}
+
+\titlecontents{section}
+[1.5em]{\color{orange!80!black}}
+{\contentslabel{1.5em}}
+{}{\titlerule*[0.5pc]{.}\contentspage}
+
+\lstset{
+	language=C,
+	basicstyle=\ttfamily,
+	backgroundcolor=\color{blue!5},
+	keywordstyle=\color{blue},
+	commentstyle=\color{codegreen},
+	stringstyle=\color{red},
+	showstringspaces=false,
+	breaklines=true,
+	frame=single,
+	rulecolor=\color{lightgray!35},
+	numbers=none,
+	numberstyle=\tiny,
+	numbersep=5pt,
+	tabsize=1,
+	morekeywords={include},
+	alsoletter={\#},
+	otherkeywords={\#}
+}
+
+\begin{document}
+
+\justifying
+
+\begin{center}
+    \textbf{{\large Developing Particle Swarm Optimization (PSO) in C with Case Study}}
+
+    \textbf{Yousha Munowar}
+
+    \textbf{McMaster University, MECHTRON 2MP3}
+    
+    \textbf{Pedram Pasandide}
+
+    \textbf{December 6, 2024}
+\end{center}
+
+\section{Test Cases}
+
+\subsection{10 Variables/Dimensions}
+\begin{table}[H]
+    \caption{10 Variables/Dimensions in All Functions}
+    \centering
+    \begin{tabular}{l c c c c c c}
+        \hline
+        Function & Lower & Upper & Particles & Iterations & Optimal Fitness & CPU Time (sec) \\
+        \hline
+        Griewank       & -600  & 600  & 4800  & 4800  & 0.0       & 1.5345 \\
+        Levy           & -10   & 10   & 500   & 2000  & 0.0       & 0.0154 \\
+        Rastrigin      & -5.12 & 5.12 & 2000  & 500   & 0.0       & 0.3541 \\
+        Rosenbrock     & -5    & 10   & 30000 & 1000  & 0.0       & 10.267 \\
+        Schwefel       & -500  & 500  & 40000 & 1500  & 0.0       & 40.596 \\
+        Dixon-Price    & -10   & 10   & 500   & 2000  & 1.06      & 1.348 \\
+        Michalewicz    & 0     & $\pi$ & 25000 & 8000  & -40.65    & 5.486 \\
+        Styblinski-Tang & -5   & 5    & 10000 & 200   & -235.457  & 2.796 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{50 Variables/Dimensions}
+\begin{table}[H]
+    \caption{50 Variables/Dimensions in All Functions}
+    \centering
+    \begin{tabular}{l c c c c c c}
+        \hline
+        Function & Lower & Upper & Particles & Iterations & Optimal Fitness & CPU Time (sec) \\
+        \hline
+        Griewank       & -600  & 600   & 40000  & 6000   & 0.0       & 1.056 \\
+        Levy           & -10   & 10    & 20000  & 2000   & 0.0       & 3.048 \\
+        Rastrigin      & -5.12 & 5.12  & 800000 & 20000  & 0.0       & 3078.26 \\
+        Rosenbrock     & -5    & 10    & 100000 & 20000  & 0.0       & 2075.046 \\
+        Schwefel       & -500  & 500   & 50000  & 20000  & 4.452     & 4976.54 \\
+        Dixon-Price    & -10   & 10    & 30000  & 2000   & 0.0       & 10.563 \\
+        Michalewicz    & 0     & $\pi$ & 375000 & 20000  & -50.483   & 1.432 \\
+        Styblinski-Tang & -5   & 5     & 100000 & 20000  & -1076.46  & 7.183 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{100 Variables/Dimensions}
+\begin{table}[H]
+    \caption{100 Variables/Dimensions in All Functions}
+    \centering
+    \begin{tabular}{l c c c c c c}
+        \hline
+        Function & Lower & Upper & Particles & Iterations & Optimal Fitness & CPU Time (sec) \\
+        \hline
+        Griewank       & -600  & 600   & 3000  & 2000   & 0.0       & 3.483 \\
+        Levy           & -10   & 10    & 250000 & 20000 & 0.0       & 74.532 \\
+        Rastrigin      & -5.12 & 5.12  & 600000 & 20000 & 45.31     & 3642.412 \\
+        Rosenbrock     & -5    & 10    & 600000 & 20000 & 55.10     & 2513.10 \\
+        Schwefel       & -500  & 500   & 650000 & 20000 & 160.82    & 7108.553 \\
+        Dixon-Price    & -10   & 10    & 35000  & 4000  & 0.0       & 170.483 \\
+        Michalewicz    & 0     & $\pi$ & 350000 & 16000 & -50.45    & 8.183 \\
+        Styblinski-Tang & -5   & 5     & 240000 & 20000 & -4043.10  & 18.486 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Compiling and Running}
+\begin{enumerate}
+    \item Download all files and ensure they are in the same directory.
+    \item Open a terminal and type \texttt{make} to compile the program.
+    \item Run the program using the following format:
+    \begin{itemize}
+        \item \texttt{./pso <Function Name> <Dimensions> <Lower Bound> <Upper Bound> <Number of Particles> <Max Iterations>}
+    \end{itemize}
+    \item Example:
+    \begin{itemize}
+        \item \texttt{./pso griewank 8 -600 600 1000 2000}
+    \end{itemize}
+\end{enumerate}
+
+\section{Appendix}
+
+\subsection{Utility.h}
+\begin{lstlisting}[language=C]
+#ifndef UTIL_H
+#define UTIL_H
+
+typedef double (*FitnessFunction)(int, double*);
+
+typedef struct {
+    double lower_bound;
+    double upper_bound;
+} VariableBounds;
+
+typedef struct {
+    double *position;      // Current position
+    double *velocity;      // Current velocity
+    double *personal_best; // Best position found so far
+    double fitness;        // Current fitness value
+    double best_fitness;   // Personal best fitness value
+} Particle;
+
+double random_in_range(double min, double max);
+void setup_particles(Particle *swarm, int num_particles, int dimensions,
+                     VariableBounds *bounds, FitnessFunction fitness_func,
+                     double *global_best_position, double *global_best_fitness);
+void update_particles(Particle *swarm, int num_particles, int dimensions,
+                      VariableBounds *bounds, FitnessFunction fitness_func,
+                      double *global_best_position, double *global_best_fitness,
+                      double inertia_weight, double cognitive_coeff, double social_coeff);
+void free_particles(Particle *swarm, int num_particles);
+double particle_swarm_optimize(FitnessFunction fitness_func, int dimensions,
+                                VariableBounds *bounds, int num_particles, int max_iterations,
+                                double *best_position);
+
+#endif
+\end{lstlisting}
+
+\subsection{PSO.c}
+\begin{lstlisting}[language=C]
+#include <stdlib.h>
+#include <math.h>
+#include <float.h>
+#include <stdio.h>
+#include "utility.h"
+
+// Generate a random value within a range
+double random_in_range(double min, double max) {
+    return min + (max - min) * ((double)rand() / RAND_MAX);
+}
+
+// Initialize the particle swarm with random positions and velocities
+void setup_particles(Particle *swarm, int num_particles, int dimensions,
+                     VariableBounds *bounds, FitnessFunction fitness_func,
+                     double *global_best_position, double *global_best_fitness) {
+    int i = 0;
+    while (i < num_particles) {
+        swarm[i].position = malloc(dimensions * sizeof(double));
+        swarm[i].velocity = malloc(dimensions * sizeof(double));
+        swarm[i].personal_best = malloc(dimensions * sizeof(double));
+        swarm[i].best_fitness = DBL_MAX;
+
+        for (int j = 0; j < dimensions; j++) {
+            swarm[i].position[j] = random_in_range(bounds[j].lower_bound, bounds[j].upper_bound);
+            swarm[i].velocity[j] = random_in_range(-1.0, 1.0);
+            swarm[i].personal_best[j] = swarm[i].position[j];
+        }
+
+        swarm[i].fitness = fitness_func(dimensions, swarm[i].position);
+
+        if (swarm[i].fitness < *global_best_fitness) {
+            *global_best_fitness = swarm[i].fitness;
+            for (int j = 0; j < dimensions; j++) {
+                global_best_position[j] = swarm[i].position[j];
+            }
+        }
+
+        i++;
+    }
+}
+
+// Update the velocities and positions of the particles
+void update_particles(Particle *swarm, int num_particles, int dimensions,
+                      VariableBounds *bounds, FitnessFunction fitness_func,
+                      double *global_best_position, double *global_best_fitness,
+                      double inertia_weight, double cognitive_coeff, double social_coeff) {
+    for (int i = 0; i < num_particles; i++) {
+        for (int j = 0; j < dimensions; j++) {
+            double rand_cognitive = random_in_range(0.0, 1.0);
+            double rand_social = random_in_range(0.0, 1.0);
+
+            swarm[i].velocity[j] = inertia_weight * swarm[i].velocity[j]
+                + cognitive_coeff * rand_cognitive * (swarm[i].personal_best[j] - swarm[i].position[j])
+                + social_coeff * rand_social * (global_best_position[j] - swarm[i].position[j]);
+
+            double max_velocity = (bounds[j].upper_bound - bounds[j].lower_bound) * 0.2;
+            if (swarm[i].velocity[j] > max_velocity) swarm[i].velocity[j] = max_velocity;
+            if (swarm[i].velocity[j] < -max_velocity) swarm[i].velocity[j] = -max_velocity;
+
+            swarm[i].position[j] += swarm[i].velocity[j];
+
+            if (swarm[i].position[j] < bounds[j].lower_bound) {
+                swarm[i].position[j] = bounds[j].lower_bound + (bounds[j].lower_bound - swarm[i].position[j]);
+                swarm[i].velocity[j] *= -1;
+            }
+            if (swarm[i].position[j] > bounds[j].upper_bound) {
+                swarm[i].position[j] = bounds[j].upper_bound - (swarm[i].position[j] - bounds[j].upper_bound);
+                swarm[i].velocity[j] *= -1;
+            }
+        }
+
+        swarm[i].fitness = fitness_func(dimensions, swarm[i].position);
+
+        if (swarm[i].fitness < swarm[i].best_fitness) {
+            swarm[i].best_fitness = swarm[i].fitness;
+            for (int j = 0; j < dimensions; j++) {
+                swarm[i].personal_best[j] = swarm[i].position[j];
+            }
+        }
+
+        if (swarm[i].fitness < *global_best_fitness) {
+            *global_best_fitness = swarm[i].fitness;
+            for (int j = 0; j < dimensions; j++) {
+                global_best_position[j] = swarm[i].position[j];
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+\end{document}
+
